@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1f4e78" />
+  <title>Командалық тапсырмалар</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --text: #182026;
+      --muted: #5b6770;
+      --border: #d5dce2;
+      --accent: #1f4e78;
+      --accent-text: #ffffff;
+      --danger: #9e2a2b;
+      --ok: #2b6cb0;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .subtitle {
+      margin: 4px 0 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .lang-switch {
+      display: flex;
+      gap: 6px;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      padding: 8px 12px;
+    }
+
+    button.active {
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: var(--accent-text);
+      border-color: var(--accent);
+    }
+
+    button.danger {
+      color: var(--danger);
+      border-color: #e2b4b5;
+      background: #fffafa;
+    }
+
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 600px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      font: inherit;
+      color: var(--text);
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+    }
+
+    .error-msg {
+      min-height: 20px;
+      margin-top: 10px;
+      font-size: 0.9rem;
+      color: var(--danger);
+      font-weight: 500;
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .task-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .task-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 12px 14px;
+      background: #ffffff;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .task-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .task-card.done .task-title {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .task-meta {
+      font-size: 0.85rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .badge.done {
+      border-color: #b7d4ee;
+      background: #eef6fc;
+      color: var(--ok);
+    }
+
+    .task-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .empty-state {
+      text-align: center;
+      color: var(--muted);
+      padding: 24px 12px;
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <h1 id="appTitle"></h1>
+        <p class="subtitle" id="appSubtitle"></p>
+      </div>
+      <div class="lang-switch" role="group" aria-label="Language selector">
+        <button type="button" id="btnKk" data-lang="kk">Қазақша</button>
+        <button type="button" id="btnRu" data-lang="ru">Русский</button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <form id="taskForm" novalidate>
+        <div class="form-grid">
+          <div class="full">
+            <label for="taskTitle" id="lblTitle"></label>
+            <input id="taskTitle" name="title" type="text" maxlength="140" />
+          </div>
+
+          <div>
+            <label for="taskAssignee" id="lblAssignee"></label>
+            <input id="taskAssignee" name="assignee" type="text" maxlength="80" />
+          </div>
+
+          <div>
+            <label for="taskPriority" id="lblPriority"></label>
+            <select id="taskPriority" name="priority">
+              <option value="high" id="optHigh"></option>
+              <option value="medium" id="optMedium" selected></option>
+              <option value="low" id="optLow"></option>
+            </select>
+          </div>
+
+          <div>
+            <label for="taskDeadline" id="lblDeadline"></label>
+            <input id="taskDeadline" name="deadline" type="date" />
+          </div>
+
+          <div class="full">
+            <button type="submit" class="primary" id="btnAdd"></button>
+            <div class="error-msg" id="errorMsg" role="alert"></div>
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel">
+      <div class="stats" id="statsBar"></div>
+      <div class="task-list" id="taskList"></div>
+    </section>
+  </div>
+
+  <script>
+    const STORAGE_TASKS_KEY = "mgmt_team_tasks_v1";
+    const STORAGE_LANG_KEY = "mgmt_team_lang_v1";
+
+    const I18N = {
+      kk: {
+        docTitle: "Командалық тапсырмалар",
+        appTitle: "Командалық тапсырмаларды басқару",
+        appSubtitle: "Менеджмент • Жергілікті сақтау және офлайн қолдау",
+        lblTitle: "Тапсырма атауы *",
+        phTitle: "Мысалы: Апталық есепті дайындау",
+        lblAssignee: "Жауапты орындаушы *",
+        phAssignee: "Мысалы: Әлия Н.",
+        lblPriority: "Басымдық",
+        lblDeadline: "Мерзімі (дедлайн)",
+        btnAdd: "Тапсырма қосу",
+        prioHigh: "Жоғары",
+        prioMedium: "Орташа",
+        prioLow: "Төмен",
+        statusInProgress: "Жұмыста",
+        statusDone: "Орындалды",
+        btnToggleToDone: "Орындалды деп белгілеу",
+        btnToggleToProgress: "Жұмысқа қайтару",
+        btnDelete: "Жою",
+        errEmptyTitle: "Тапсырма атауын толтырыңыз.",
+        errEmptyAssignee: "Жауапты орындаушыны көрсетіңіз.",
+        emptyList: "Әзірге тапсырмалар жоқ. Жоғарыдағы форма арқылы жаңа тапсырма қосыңыз.",
+        statTotal: "Барлығы",
+        statProgress: "Жұмыста",
+        statDone: "Орындалды",
+        metaAssignee: "Орындаушы",
+        metaPriority: "Басымдық",
+        metaDeadline: "Мерзімі",
+        metaCreated: "Құрылды",
+        noDeadline: "Көрсетілмеген"
+      },
+      ru: {
+        docTitle: "Рабочие задачи команды",
+        appTitle: "Управление рабочими задачами команды",
+        appSubtitle: "Менеджмент • Локальное сохранение и работа офлайн",
+        lblTitle: "Название задачи *",
+        phTitle: "Например: Подготовить еженедельный отчёт",
+        lblAssignee: "Ответственный исполнитель *",
+        phAssignee: "Например: Алия Н.",
+        lblPriority: "Приоритет",
+        lblDeadline: "Срок (дедлайн)",
+        btnAdd: "Добавить задачу",
+        prioHigh: "Высокий",
+        prioMedium: "Средний",
+        prioLow: "Низкий",
+        statusInProgress: "В работе",
+        statusDone: "Выполнена",
+        btnToggleToDone: "Отметить выполненной",
+        btnToggleToProgress: "Вернуть в работу",
+        btnDelete: "Удалить",
+        errEmptyTitle: "Введите название задачи.",
+        errEmptyAssignee: "Укажите ответственного исполнителя.",
+        emptyList: "Задач пока нет. Добавьте первую задачу через форму выше.",
+        statTotal: "Всего",
+        statProgress: "В работе",
+        statDone: "Выполнено",
+        metaAssignee: "Исполнитель",
+        metaPriority: "Приоритет",
+        metaDeadline: "Дедлайн",
+        metaCreated: "Создано",
+        noDeadline: "Не указан"
+      }
+    };
+
+    let currentLang = loadLang();
+    let tasks = loadTasks();
+
+    const els = {
+      appTitle: document.getElementById("appTitle"),
+      appSubtitle: document.getElementById("appSubtitle"),
+      btnKk: document.getElementById("btnKk"),
+      btnRu: document.getElementById("btnRu"),
+      lblTitle: document.getElementById("lblTitle"),
+      taskTitle: document.getElementById("taskTitle"),
+      lblAssignee: document.getElementById("lblAssignee"),
+      taskAssignee: document.getElementById("taskAssignee"),
+      lblPriority: document.getElementById("lblPriority"),
+      taskPriority: document.getElementById("taskPriority"),
+      optHigh: document.getElementById("optHigh"),
+      optMedium: document.getElementById("optMedium"),
+      optLow: document.getElementById("optLow"),
+      lblDeadline: document.getElementById("lblDeadline"),
+      taskDeadline: document.getElementById("taskDeadline"),
+      btnAdd: document.getElementById("btnAdd"),
+      errorMsg: document.getElementById("errorMsg"),
+      taskForm: document.getElementById("taskForm"),
+      statsBar: document.getElementById("statsBar"),
+      taskList: document.getElementById("taskList")
+    };
+
+    function loadLang() {
+      try {
+        const saved = localStorage.getItem(STORAGE_LANG_KEY);
+        return saved === "ru" ? "ru" : "kk";
+      } catch (_) {
+        return "kk";
+      }
+    }
+
+    function saveLang(lang) {
+      try {
+        localStorage.setItem(STORAGE_LANG_KEY, lang);
+      } catch (_) {}
+    }
+
+    function loadTasks() {
+      try {
+        const raw = localStorage.getItem(STORAGE_TASKS_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (_) {
+        return [];
+      }
+    }
+
+    function saveTasks() {
+      try {
+        localStorage.setItem(STORAGE_TASKS_KEY, JSON.stringify(tasks));
+      } catch (_) {}
+    }
+
+    function getPriorityLabel(priority, t) {
+      if (priority === "high") return t.prioHigh;
+      if (priority === "low") return t.prioLow;
+      return t.prioMedium;
+    }
+
+    function formatCreatedDate(isoString, lang) {
+      try {
+        const d = new Date(isoString);
+        if (Number.isNaN(d.getTime())) return isoString;
+        return d.toLocaleDateString(lang === "ru" ? "ru-RU" : "kk-KZ");
+      } catch (_) {
+        return isoString;
+      }
+    }
+
+    function applyLanguage() {
+      const t = I18N[currentLang];
+      document.documentElement.lang = currentLang;
+      document.title = t.docTitle;
+
+      els.appTitle.textContent = t.appTitle;
+      els.appSubtitle.textContent = t.appSubtitle;
+      els.lblTitle.textContent = t.lblTitle;
+      els.taskTitle.placeholder = t.phTitle;
+      els.lblAssignee.textContent = t.lblAssignee;
+      els.taskAssignee.placeholder = t.phAssignee;
+      els.lblPriority.textContent = t.lblPriority;
+      els.lblDeadline.textContent = t.lblDeadline;
+      els.btnAdd.textContent = t.btnAdd;
+
+      els.optHigh.textContent = t.prioHigh;
+      els.optMedium.textContent = t.prioMedium;
+      els.optLow.textContent = t.prioLow;
+
+      els.btnKk.classList.toggle("active", currentLang === "kk");
+      els.btnRu.classList.toggle("active", currentLang === "ru");
+
+      render();
+    }
+
+    function renderStats(t) {
+      const total = tasks.length;
+      const doneCount = tasks.filter((item) => item.status === "done").length;
+      const progressCount = total - doneCount;
+
+      els.statsBar.textContent = "";
+
+      const items = [
+        `${t.statTotal}: ${total}`,
+        `${t.statProgress}: ${progressCount}`,
+        `${t.statDone}: ${doneCount}`
+      ];
+
+      items.forEach((text) => {
+        const span = document.createElement("span");
+        span.textContent = text;
+        els.statsBar.appendChild(span);
+      });
+    }
+
+    function render() {
+      const t = I18N[currentLang];
+      renderStats(t);
+      els.taskList.textContent = "";
+
+      if (tasks.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = t.emptyList;
+        els.taskList.appendChild(empty);
+        return;
+      }
+
+      tasks.forEach((task) => {
+        const isDone = task.status === "done";
+
+        const card = document.createElement("article");
+        card.className = isDone ? "task-card done" : "task-card";
+
+        const info = document.createElement("div");
+
+        const titleEl = document.createElement("div");
+        titleEl.className = "task-title";
+        titleEl.textContent = task.title;
+
+        const metaEl = document.createElement("div");
+        metaEl.className = "task-meta";
+
+        const statusBadge = document.createElement("span");
+        statusBadge.className = isDone ? "badge done" : "badge";
+        statusBadge.textContent = isDone ? t.statusDone : t.statusInProgress;
+
+        const assigneeSpan = document.createElement("span");
+        assigneeSpan.textContent = `${t.metaAssignee}: ${task.assignee}`;
+
+        const prioritySpan = document.createElement("span");
+        prioritySpan.textContent = `${t.metaPriority}: ${getPriorityLabel(task.priority, t)}`;
+
+        const deadlineSpan = document.createElement("span");
+        deadlineSpan.textContent = `${t.metaDeadline}: ${task.deadline || t.noDeadline}`;
+
+        const createdSpan = document.createElement("span");
+        createdSpan.textContent = `${t.metaCreated}: ${formatCreatedDate(task.createdAt, currentLang)}`;
+
+        metaEl.append(statusBadge, assigneeSpan, prioritySpan, deadlineSpan, createdSpan);
+        info.append(titleEl, metaEl);
+
+        const actions = document.createElement("div");
+        actions.className = "task-actions";
+
+        const toggleBtn = document.createElement("button");
+        toggleBtn.type = "button";
+        toggleBtn.textContent = isDone ? t.btnToggleToProgress : t.btnToggleToDone;
+        toggleBtn.addEventListener("click", () => toggleTaskStatus(task.id));
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.type = "button";
+        deleteBtn.className = "danger";
+        deleteBtn.textContent = t.btnDelete;
+        deleteBtn.addEventListener("click", () => deleteTask(task.id));
+
+        actions.append(toggleBtn, deleteBtn);
+        card.append(info, actions);
+        els.taskList.appendChild(card);
+      });
+    }
+
+    function toggleTaskStatus(id) {
+      tasks = tasks.map((item) => {
+        if (item.id !== id) return item;
+        return {
+          ...item,
+          status: item.status === "done" ? "in_progress" : "done"
+        };
+      });
+      saveTasks();
+      render();
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter((item) => item.id !== id);
+      saveTasks();
+      render();
+    }
+
+    els.taskForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const t = I18N[currentLang];
+      els.errorMsg.textContent = "";
+
+      const titleVal = els.taskTitle.value.trim();
+      const assigneeVal = els.taskAssignee.value.trim();
+      const priorityVal = els.taskPriority.value;
+      const deadlineVal = els.taskDeadline.value;
+
+      if (!titleVal) {
+        els.errorMsg.textContent = t.errEmptyTitle;
+        els.taskTitle.focus();
+        return;
+      }
+
+      if (!assigneeVal) {
+        els.errorMsg.textContent = t.errEmptyAssignee;
+        els.taskAssignee.focus();
+        return;
+      }
+
+      const newTask = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        title: titleVal,
+        assignee: assigneeVal,
+        priority: ["high", "medium", "low"].includes(priorityVal) ? priorityVal : "medium",
+        deadline: deadlineVal || "",
+        status: "in_progress",
+        createdAt: new Date().toISOString()
+      };
+
+      tasks.unshift(newTask);
+      saveTasks();
+      render();
+
+      els.taskTitle.value = "";
+      els.taskAssignee.value = "";
+      els.taskDeadline.value = "";
+      els.taskPriority.value = "medium";
+      els.taskTitle.focus();
+    });
+
+    els.btnKk.addEventListener("click", () => {
+      currentLang = "kk";
+      saveLang(currentLang);
+      applyLanguage();
+    });
+
+    els.btnRu.addEventListener("click", () => {
+      currentLang = "ru";
+      saveLang(currentLang);
+      applyLanguage();
+    });
+
+    applyLanguage();
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+  </script>
+</body>
+</html>
